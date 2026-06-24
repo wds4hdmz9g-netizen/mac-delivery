@@ -13,10 +13,20 @@ echo "    矩阵内容工厂 · 启动中..."
 echo "  ============================================"
 echo ""
 
-# Check if installed
-if [ ! -f "$APP_DIR/.node" ]; then
-    echo "  [错误] 未检测到运行环境！"
-    echo "  请先双击「安装.command」完成安装。"
+# 三层回退找 Node.js: 便携版 .node → 系统 node → 提示安装
+NODE_BIN=""
+if [ -f "$APP_DIR/.node" ]; then
+    NODE_BIN="$APP_DIR/.node"
+    echo "  [OK] 使用便携版 Node.js"
+elif command -v node &> /dev/null; then
+    NODE_BIN="node"
+    echo "  [OK] 使用系统已安装的 Node.js ($(node --version))"
+else
+    echo "  [错误] 未检测到 Node.js 运行环境！"
+    echo ""
+    echo "  请选择以下任一方式："
+    echo "    1) 双击「安装.command」自动安装"
+    echo "    2) 手动安装Node.js: https://nodejs.org"
     echo ""
     echo "  按任意键关闭..."
     read -n 1
@@ -34,7 +44,7 @@ fi
 
 # Start server
 echo "  正在启动服务..."
-"$APP_DIR/.node" "$APP_DIR/server.js" &
+"$NODE_BIN" "$APP_DIR/server.js" &
 SERVER_PID=$!
 
 # Wait for server to be ready
