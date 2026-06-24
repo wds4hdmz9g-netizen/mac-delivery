@@ -1,126 +1,50 @@
-name: Build Mac Packages
+name: Build Mac Electron Packages
 
 on:
   push:
     branches: [main]
-  workflow_dispatch:
 
 jobs:
-  build-lipsync:
+  build-mac-lipsync:
     runs-on: macos-latest
     steps:
       - uses: actions/checkout@v4
-
+      
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: '22'
-
-      - name: Install production dependencies
-        working-directory: lipsync
-        run: npm install --omit=dev
-
-      - name: Download FFmpeg (macOS)
-        run: |
-          mkdir -p lipsync/.ffmpeg
-          curl -L -# "https://evermeet.cx/ffmpeg/getrelease/ffmpeg/zip" -o /tmp/ffmpeg.zip
-          unzip -o /tmp/ffmpeg.zip -d lipsync/.ffmpeg/
-          chmod +x lipsync/.ffmpeg/ffmpeg
-
-      - name: Bundle Node.js binary
-        run: |
-          NODE_VERSION=$(node -v | sed 's/v//')
-          ARCH=$(uname -m)
-          if [ "$ARCH" = "arm64" ]; then
-            NODE_ARCH="arm64"
-          else
-            NODE_ARCH="x64"
-          fi
-          NODE_URL="https://nodejs.org/dist/v${NODE_VERSION}/node-v${NODE_VERSION}-darwin-${NODE_ARCH}.tar.gz"
-          echo "Downloading Node.js from $NODE_URL"
-          curl -L -# "$NODE_URL" -o /tmp/node.tar.gz
-          tar -xzf /tmp/node.tar.gz -C /tmp/
-          cp "/tmp/node-v${NODE_VERSION}-darwin-${NODE_ARCH}/bin/node" lipsync/.node
-          chmod +x lipsync/.node
-
-      - name: Test server startup
+          
+      - name: Build AI口播助手
         working-directory: lipsync
         run: |
-          echo "Testing server startup..."
-          export FFMPEG_PATH="$(pwd)/.ffmpeg/ffmpeg"
-          timeout 10 ./.node server.js &
-          sleep 3
-          curl -s -o /dev/null -w "%{http_code}" http://localhost:3459 || true
-          echo "Server started successfully!"
-
-      - name: Create zip package
-        run: |
-          cd lipsync
-          zip -r ../AI数字人口播助手_Mac.zip . -x "node_modules/.package-lock.json"
-          cd ..
-          ls -lh AI数字人口播助手_Mac.zip
-
-      - name: Upload artifact
+          npm install
+          npx electron-builder --mac --x64 --arm64
+          
+      - name: Upload DMG
         uses: actions/upload-artifact@v4
         with:
           name: AI口播助手-Mac版
-          path: AI数字人口播助手_Mac.zip
+          path: lipsync/dist-electron/*.dmg
 
-  build-matrix:
+  build-mac-matrix:
     runs-on: macos-latest
     steps:
       - uses: actions/checkout@v4
-
+      
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: '22'
-
-      - name: Install production dependencies
-        working-directory: matrix
-        run: npm install --omit=dev
-
-      - name: Download FFmpeg (macOS)
-        run: |
-          mkdir -p matrix/.ffmpeg
-          curl -L -# "https://evermeet.cx/ffmpeg/getrelease/ffmpeg/zip" -o /tmp/ffmpeg.zip
-          unzip -o /tmp/ffmpeg.zip -d matrix/.ffmpeg/
-          chmod +x matrix/.ffmpeg/ffmpeg
-
-      - name: Bundle Node.js binary
-        run: |
-          NODE_VERSION=$(node -v | sed 's/v//')
-          ARCH=$(uname -m)
-          if [ "$ARCH" = "arm64" ]; then
-            NODE_ARCH="arm64"
-          else
-            NODE_ARCH="x64"
-          fi
-          NODE_URL="https://nodejs.org/dist/v${NODE_VERSION}/node-v${NODE_VERSION}-darwin-${NODE_ARCH}.tar.gz"
-          curl -L -# "$NODE_URL" -o /tmp/node.tar.gz
-          tar -xzf /tmp/node.tar.gz -C /tmp/
-          cp "/tmp/node-v${NODE_VERSION}-darwin-${NODE_ARCH}/bin/node" matrix/.node
-          chmod +x matrix/.node
-
-      - name: Test server startup
+          
+      - name: Build 矩阵工厂
         working-directory: matrix
         run: |
-          echo "Testing server startup..."
-          export FFMPEG_PATH="$(pwd)/.ffmpeg/ffmpeg"
-          timeout 10 ./.node server.js &
-          sleep 3
-          curl -s -o /dev/null -w "%{http_code}" http://localhost:3460 || true
-          echo "Server started successfully!"
-
-      - name: Create zip package
-        run: |
-          cd matrix
-          zip -r ../矩阵内容工厂_Mac.zip . -x "node_modules/.package-lock.json"
-          cd ..
-          ls -lh 矩阵内容工厂_Mac.zip
-
-      - name: Upload artifact
+          npm install
+          npx electron-builder --mac --x64 --arm64
+          
+      - name: Upload DMG
         uses: actions/upload-artifact@v4
         with:
           name: 矩阵工厂-Mac版
-          path: 矩阵内容工厂_Mac.zip
+          path: matrix/dist-electron/*.dmg
