@@ -1,0 +1,50 @@
+appId: com.yangbanzhang.ai-lipsync
+productName: "AI Digital Human Assistant"
+copyright: "YangBanzhang"
+
+directories:
+  output: dist-electron
+
+win:
+  target:
+    - target: nsis
+      arch:
+        - x64
+
+nsis:
+  oneClick: false
+  perMachine: false
+  allowToChangeInstallationDirectory: true
+  createDesktopShortcut: true
+  createStartMenuShortcut: true
+  shortcutName: "AI Digital Human Assistant"
+  language: "2052"
+
+asar: true
+asarUnpack:
+  - "server.js"
+  - "online_activation.js"
+  - "web/**"
+  - ".ffmpeg/**"
+  - ".node.exe"
+
+files:
+  - "electron-main.js"
+  - "package.json"
+  - "server.js"
+  - "online_activation.js"
+  - "web/**"
+  - ".ffmpeg/**"
+  - ".node.exe"
+  - ".api_key"
+  - ".api_key_paid"
+  - "node_modules/**"
+  - "!node_modules/electron/**"
+  - "!node_modules/electron-builder/**"
+  - "!dist-electron/**"
+  - "!*.md"
+  - "!*.bat"
+  - "!*.vbs"
+  - "!*.reg"
+
+compression: maximum
