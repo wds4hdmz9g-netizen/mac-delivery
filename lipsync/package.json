@@ -1,0 +1,51 @@
+{
+  "name": "super-ip-agent",
+  "version": "1.0.0",
+  "description": "超级IP智能体 - AI视频创作工具",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron .",
+    "server": "node server.js",
+    "build": "electron-builder",
+    "dev": "node server.js"
+  },
+  "build": {
+    "appId": "com.yangbanzhang.super-ip-agent",
+    "productName": "超级IP智能体",
+    "directories": {
+      "output": "dist"
+    },
+    "extraResources": [
+      {
+        "from": "resources/",
+        "to": "resources/"
+      }
+    ],
+    "files": [
+      "main.js",
+      "preload.js",
+      "server.js",
+      "providers/**/*",
+      "pipeline/**/*",
+      "web/**/*",
+      "config/**/*",
+      "node_modules/**/*"
+    ],
+    "win": {
+      "target": "portable",
+      "icon": null
+    }
+  },
+  "dependencies": {
+    "cors": "^2.8.6",
+    "express": "^4.22.2",
+    "form-data": "^4.0.5",
+    "multer": "^1.4.5-lts.1",
+    "node-fetch": "^2.7.0",
+    "openai": "^4.20.0"
+  },
+  "devDependencies": {
+    "electron": "^28.0.0",
+    "electron-builder": "^24.9.0"
+  }
+}

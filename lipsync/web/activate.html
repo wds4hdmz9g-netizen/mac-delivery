@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>激活 - AI数字人口播助手</title>
+<style>
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{font-family:'Microsoft YaHei',sans-serif;background:linear-gradient(135deg,#0f0f1a 0%,#1a1a2e 100%);color:#e0e0e0;min-height:100vh;display:flex;justify-content:center;align-items:center}
+  .card{width:420px;background:rgba(26,26,46,0.95);border-radius:20px;padding:40px;border:1px solid #2a2a4a;box-shadow:0 20px 60px rgba(0,0,0,0.5);text-align:center}
+  .logo{font-size:48px;margin-bottom:12px}
+  h1{color:#f97316;font-size:22px;margin-bottom:4px}
+  .sub{color:#666;font-size:13px;margin-bottom:28px}
+  .input-group{margin-bottom:20px}
+  .input-group input{width:100%;background:#16213e;border:2px solid #333;color:#fff;padding:14px 16px;border-radius:10px;font-size:18px;text-align:center;letter-spacing:3px;font-family:'Courier New',monospace;text-transform:uppercase;transition:border-color .3s}
+  .input-group input:focus{outline:none;border-color:#f97316}
+  .input-group input::placeholder{color:#444;letter-spacing:1px;font-size:14px}
+  .btn{width:100%;background:#f97316;color:#fff;border:none;padding:14px;border-radius:10px;font-size:16px;font-weight:bold;cursor:pointer;transition:all .2s}
+  .btn:hover{background:#ea580c;transform:translateY(-2px)}
+  .btn:disabled{background:#333;cursor:not-allowed;transform:none}
+  .msg{margin-top:16px;min-height:20px;font-size:14px}
+  .msg.success{color:#4ade80}
+  .msg.error{color:#f87171}
+  .msg.info{color:#60a5fa}
+  .foot{position:fixed;bottom:20px;width:100%;text-align:center;color:#444;font-size:12px}
+  .spinner{display:none;width:20px;height:20px;border:2px solid #fff;border-top-color:transparent;border-radius:50%;animation:spin .8s linear infinite;margin:0 auto 10px}
+  @keyframes spin{to{transform:rotate(360deg)}}
+</style>
+</head>
+<body>
+<div class="card">
+  <div class="logo">🔑</div>
+  <h1>AI数字人口播助手</h1>
+  <p class="sub">请输入激活码以继续使用</p>
+
+  <div class="spinner" id="spinner"></div>
+
+  <div class="input-group">
+    <input type="text" id="code" placeholder="例如: 01KCPX-KTJ2-1CS" maxlength="16" autocomplete="off">
+  </div>
+
+  <button class="btn" id="btn" onclick="activate()">激活</button>
+
+  <div class="msg" id="msg">请联系客服获取激活码</div>
+</div>
+<div class="foot">杨班长 · AI数字人口播助手 v1.0</div>
+
+<script>
+const btn = document.getElementById('btn');
+const msg = document.getElementById('msg');
+const spinner = document.getElementById('spinner');
+const input = document.getElementById('code');
+
+input.addEventListener('keyup', (e) => {
+  if (e.key === 'Enter') activate();
+});
+
+async function activate() {
+  const code = input.value.trim().toUpperCase();
+  if (!code) { msg.className = 'msg error'; msg.textContent = '请输入激活码'; return; }
+  
+  btn.disabled = true;
+  spinner.style.display = 'block';
+  msg.className = 'msg info';
+  msg.textContent = '正在验证...';
+  
+  try {
+    const r = await fetch('/api/activate', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ code })
+    });
+    const d = await r.json();
+    
+    if (d.ok) {
+      msg.className = 'msg success';
+      msg.textContent = '✅ 激活成功！正在跳转...';
+      spinner.style.display = 'none';
+      setTimeout(() => { location.href = '/'; }, 1500);
+    } else {
+      msg.className = 'msg error';
+      msg.textContent = '❌ ' + (d.error || '激活码无效');
+      btn.disabled = false;
+      spinner.style.display = 'none';
+    }
+  } catch(e) {
+    msg.className = 'msg error';
+    msg.textContent = '网络错误，请检查服务是否启动';
+    btn.disabled = false;
+    spinner.style.display = 'none';
+  }
+}
+</script>
+</body>
+</html>

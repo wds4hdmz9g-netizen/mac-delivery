@@ -1,0 +1,7 @@
+node_modules/
+.ffmpeg/
+.node
+output/
+temp_media/
+.activated
+.DS_Store

@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>矩阵内容工厂 v4.0.9</title>
+<link rel="stylesheet" href="style.css?v=409">
+</head>
+<body>
+
+<header>
+  <div class="logo">🏭 矩阵内容工厂 <span class="ver">v4.0.9</span></div>
+  <div class="header-right">
+    <button class="btn-settings" onclick="openSettings()" title="API Key设置">⚙️ 设置</button>
+    <span id="statusDot" class="dot green"></span>
+    <span id="statusText">就绪</span>
+  </div>
+</header>
+
+<div class="main-container">
+
+  <!-- ====== 步骤1: 输入文案 ====== -->
+  <section class="card" id="secInput">
+    <div class="step-badge">1</div>
+    <h2>📎 输入文案</h2>
+    <p class="sub">粘贴抖音链接自动提取，或直接粘贴文案一键生成视频</p>
+    <textarea id="inputText" placeholder="粘贴抖音视频链接（自动提取文案）&#10;或直接粘贴你的文案（跳过提取直接生成视频）" rows="4"></textarea>
+    <div class="btn-row">
+      <button class="btn primary" id="btnExtract" onclick="doExtract()">🔍 提取文案（抖音链接）</button>
+      <button class="btn accent" id="btnDirectText" onclick="doDirectText()">📝 直接用文案生成视频</button>
+      <button class="btn secondary" id="btnClear" onclick="doClear()">🗑 清空</button>
+    </div>
+    <div id="extractResult" class="result-box" style="display:none"></div>
+  </section>
+
+  <!-- ====== 步骤2: AI改写 + 直接生成 ====== -->
+  <section class="card" id="secRewrite" style="display:none">
+    <div class="step-badge">2</div>
+    <h2>✏️ 确认文案 <span class="hint">（可编辑后生成）</span></h2>
+    <textarea id="editText" placeholder="提取的文案，可编辑..." rows="4"></textarea>
+    <div class="btn-row">
+      <button class="btn primary" id="btnRewrite" onclick="doRewrite()">🤖 AI改写（生成3版）</button>
+      <button class="btn accent" id="btnSkipRewrite" onclick="doSkipRewrite()">🎬 直接生成视频</button>
+    </div>
+    <div id="rewriteResult" class="rewrite-grid" style="display:none"></div>
+  </section>
+
+  <!-- ====== 步骤3: 视频设置 ====== -->
+  <section class="card" id="secSettings" style="display:none">
+    <div class="step-badge">3</div>
+    <h2>⚙️ 视频设置</h2>
+
+    <!-- 选中版本预览 -->
+    <div class="selected-version" id="selectedVersionPreview"></div>
+
+    <div class="settings-grid">
+      <!-- 视频比例 -->
+      <div class="setting-group">
+        <label>📐 视频比例</label>
+        <select id="aspectRatio">
+          <option value="9:16">9:16 竖屏（抖音）</option>
+          <option value="16:9">16:9 横屏（YouTube）</option>
+          <option value="4:3">4:3 传统</option>
+          <option value="3:4">3:4 竖屏（小红书）</option>
+          <option value="1:1">1:1 正方形</option>
+        </select>
+      </div>
+
+      <!-- 语种 -->
+      <div class="setting-group">
+        <label>🗣 语种</label>
+        <select id="voiceLang" onchange="onLangChange()">
+          <option value="zh-CN">中文普通话</option>
+          <option value="zh-HK">粤语</option>
+          <option value="en-US">English</option>
+        </select>
+      </div>
+
+      <!-- 音色 -->
+      <div class="setting-group">
+        <label>🎙 配音音色</label>
+        <select id="voiceSelect"></select>
+      </div>
+
+      <!-- BGM -->
+      <div class="setting-group">
+        <label>🎵 背景音乐</label>
+        <select id="bgmSelect"></select>
+      </div>
+
+      <!-- 字幕开关 -->
+      <div class="setting-group">
+        <label>✏️ 字幕</label>
+        <div class="toggle-row">
+          <label class="switch">
+            <input type="checkbox" id="enableSubtitles" checked>
+            <span class="slider"></span>
+          </label>
+          <span class="toggle-label-text">烧录字幕到视频</span>
+        </div>
+      </div>
+
+      <!-- 字幕样式 -->
+      <div class="setting-group" id="subtitleStyleGroup">
+        <label>字幕样式</label>
+        <select id="subtitleStyle">
+          <option value="white">白字黑边</option>
+          <option value="yellow">黄字黑边</option>
+          <option value="neon">霓虹绿</option>
+          <option value="clean">简约白字</option>
+          <option value="bold_yellow">大号黄字</option>
+        </select>
+      </div>
+
+      <!-- 在线素材 -->
+      <div class="setting-group">
+        <label>🌐 自动搜素材</label>
+        <div class="toggle-row">
+          <label class="switch">
+            <input type="checkbox" id="useWebMedia" checked>
+            <span class="slider"></span>
+          </label>
+          <span class="toggle-label-text">自动网上搜索匹配素材</span>
+        </div>
+      </div>
+
+      <!-- v4.0: AI视频生成模式 -->
+      <div class="setting-group highlight-ai">
+        <label>🤖 AI视频生成 <span class="badge-new">新</span></label>
+        <div class="toggle-row">
+          <label class="switch ai-switch">
+            <input type="checkbox" id="useAiVideo" onchange="onAiVideoChange()">
+            <span class="slider"></span>
+          </label>
+          <span class="toggle-label-text">AI生成精准匹配文案的视频内容（推荐）</span>
+        </div>
+        <div id="aiVideoHint" class="ai-hint" style="display:none">
+          💡 AI模式会调用多模态生成服务，根据每段文案生成精准匹配的场景视频，比搜索素材更匹配
+        </div>
+      </div>
+    </div>
+
+    <button class="btn accent" id="btnGenerate" onclick="doGenerate()">🎬 生成视频</button>
+    <div id="progressArea" class="progress-area" style="display:none">
+      <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+      <div id="progressMsg" class="progress-msg"></div>
+    </div>
+  </section>
+
+  <!-- ====== 结果区 ====== -->
+  <section class="card" id="secResult" style="display:none">
+    <div class="step-badge done">✓</div>
+    <h2>📦 生成结果</h2>
+    <div id="resultContent" class="result-video"></div>
+    <div class="btn-row" style="margin-top:16px;">
+      <button class="btn secondary" id="btnReset" onclick="doReset()">🔄 重新开始（清空所有）</button>
+    </div>
+  </section>
+
+</div>
+
+<!-- ====== 设置弹窗 ====== -->
+<div id="settingsModal" class="modal" style="display:none">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h2>⚙️ API Key 设置</h2>
+      <button class="btn-close" onclick="closeSettings()">✕</button>
+    </div>
+    <div class="modal-body">
+      <p class="hint-text">需要模力方舟 API Key 才能使用文案提取和AI改写功能。</p>
+      <p class="hint-text"><a href="https://moark.com" target="_blank">👉 免费获取模力方舟 Key（点此注册）</a></p>
+      <div class="form-group">
+        <label>模力方舟 API Key</label>
+        <input type="password" id="apiKeyInput" placeholder="粘贴你的 Key（sk-... 或 MY...）" style="width:100%;padding:10px;font-size:14px;border:1px solid #444;border-radius:6px;background:#1a1a2e;color:#fff;margin-top:6px;">
+      </div>
+      <div class="form-group" style="margin-top:12px;">
+        <span id="keyStatus" style="font-size:13px;color:#888;">状态：加载中...</span>
+      </div>
+      <div class="btn-row" style="margin-top:16px;">
+        <button class="btn primary" onclick="saveKey()">💾 保存</button>
+        <button class="btn secondary" onclick="verifyKey()">🔍 验证Key</button>
+        <button class="btn secondary" onclick="closeSettings()">取消</button>
+      </div>
+      <div id="keyVerifyResult" style="margin-top:12px;font-size:13px;"></div>
+    </div>
+  </div>
+</div>
+
+<script src="app.js?v=409"></script>
+</body>
+</html>

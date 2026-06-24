@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>杨班长 · AI数字人口播助手</title>
+<link rel="stylesheet" crossorigin href="./assets/index-DC5C81h8.css?t=0611L">
+<style>
+/* ===== 橙色主题（醒目、劳务行业风格）===== */
+html, body, #app {
+  --el-color-primary: #f97316 !important;
+  --el-color-primary-light-3: #fb923c !important;
+  --el-color-primary-light-5: #fdba74 !important;
+}
+button, .el-button, .el-button--primary, .primary-button {
+  background-color: #f97316 !important;
+  border-color: #f97316 !important;
+  color: #fff !important;
+}
+button:hover, .el-button:hover {
+  background-color: #ea580c !important;
+  border-color: #ea580c !important;
+}
+.el-switch.is-checked .el-switch__core {
+  background-color: #f97316 !important;
+  border-color: #f97316 !important;
+}
+/* 开关文字标签 */
+.el-switch__label, .el-radio__label, .el-checkbox__label {
+  color: inherit !important;
+}
+
+/* ===== 布局: 两列 ===== */
+.column-board {
+  grid-template-columns: repeat(2, 1fr) !important;
+  min-width: auto !important;
+}
+.column-board > *:nth-child(3),
+.column-board > *:nth-child(4) {
+  display: none !important;
+}
+
+/* ===== 隐藏封面/导出/画中画（不误伤video标签）===== */
+.cover-style-previews, .cover-frame-section,
+.cover-font-row, .cover-field, .render-section,
+.cover-preview-empty, .cover-style-selected-badge,
+.cover-capturing-hint, .cover-frame-range, .cover-frame-controls,
+[class*="cover-style"], [class*="cover-frame"],
+.pip-image-generator, [class*="pip-"], [class*="Pip"],
+.app-footer, [class*="author"], [class*="Author"] {
+  display: none !important;
+}
+</style>
+</head>
+<body>
+<div id="app"></div>
+<script src="/api-bridge.js?t=0611L"></script>
+<script type="module" crossorigin src="./assets/index-xjmrN6Ze.js?t=0611L"></script>
+</body>
+</html>

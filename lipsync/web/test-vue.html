@@ -1,0 +1,27 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<title>测试</title>
+</head>
+<body>
+<h1>测试页面 OK</h1>
+<div id="app">加载中...</div>
+<script src="/api-bridge.js?t=0611b"></script>
+<script type="module">
+import { createApp, ref } from './assets/index-xjmrN6Ze.js';
+// 检查Vue是否加载
+console.log('Module loaded');
+try {
+  const app = createApp({
+    setup() { return () => 'Hello Vue'; }
+  });
+  app.mount('#app');
+  console.log('Mounted OK');
+} catch(e) {
+  document.getElementById('app').textContent = 'Error: ' + e.message;
+  console.error(e);
+}
+</script>
+</body>
+</html>
