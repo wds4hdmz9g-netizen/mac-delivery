@@ -1,0 +1,53 @@
+appId: com.yangbanzhang.matrix-factory
+productName: "Matrix Content Factory"
+copyright: "YangBanzhang"
+
+directories:
+  output: dist-electron
+
+win:
+  target:
+    - target: nsis
+      arch:
+        - x64
+
+nsis:
+  oneClick: false
+  perMachine: false
+  allowToChangeInstallationDirectory: true
+  createDesktopShortcut: true
+  createStartMenuShortcut: true
+  shortcutName: "Matrix Content Factory"
+  language: "2052"
+
+asar: true
+asarUnpack:
+  - "server.js"
+  - "activation.js"
+  - "web/**"
+  - ".ffmpeg/**"
+  - ".node.exe"
+
+files:
+  - "electron-main.js"
+  - "package.json"
+  - "server.js"
+  - "activation.js"
+  - "web/**"
+  - "config/**"
+  - "pipeline/**"
+  - "providers/**"
+  - "bgm_library/**"
+  - ".ffmpeg/**"
+  - ".node.exe"
+  - ".api_key"
+  - "node_modules/**"
+  - "!node_modules/electron/**"
+  - "!node_modules/electron-builder/**"
+  - "!dist-electron/**"
+  - "!*.md"
+  - "!*.bat"
+  - "!*.vbs"
+  - "!*.reg"
+
+compression: maximum
