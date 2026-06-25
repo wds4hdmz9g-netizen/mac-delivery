@@ -45,6 +45,15 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: '22'
+
+      - name: Install FFmpeg and cache for bundling
+        working-directory: matrix
+        run: |
+          brew install ffmpeg
+          mkdir -p .ffmpeg
+          cp $(which ffmpeg) .ffmpeg/ffmpeg
+          chmod +x .ffmpeg/ffmpeg
+          echo "FFmpeg installed: $(.ffmpeg/ffmpeg -version | head -1)"
           
       - name: Build 矩阵工厂
         working-directory: matrix
