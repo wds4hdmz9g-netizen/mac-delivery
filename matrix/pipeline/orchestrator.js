@@ -495,10 +495,32 @@ class VideoPipeline {
 
   _getFFmpegPath() {
     if (process.env.FFMPEG_PATH && fs.existsSync(process.env.FFMPEG_PATH)) return process.env.FFMPEG_PATH;
+    // Windows paths
     const dPath = 'D:\\ffmpeg\\ffmpeg-8.1.1-essentials_build\\bin\\ffmpeg.exe';
     if (fs.existsSync(dPath)) return dPath;
-    const localPath = path.join(__dirname, '..', 'ffmpeg.exe');
-    if (fs.existsSync(localPath)) return localPath;
+    const localExe = path.join(__dirname, '..', 'ffmpeg.exe');
+    if (fs.existsSync(localExe)) return localExe;
+    // Cached .ffmpeg/ffmpeg.exe (dev & Electron extraResources)
+    const cachedExe = path.join(__dirname, '..', '.ffmpeg', 'ffmpeg.exe');
+    if (fs.existsSync(cachedExe)) return cachedExe;
+    // Electron packaged: resources/.ffmpeg/
+    if (process.resourcesPath) {
+      const resExe = path.join(process.resourcesPath, '.ffmpeg', 'ffmpeg.exe');
+      if (fs.existsSync(resExe)) return resExe;
+      const resExe2 = path.join(process.resourcesPath, 'ffmpeg.exe');
+      if (fs.existsSync(resExe2)) return resExe2;
+    }
+    // Mac / Linux paths
+    if (process.platform !== 'win32') {
+      const localFF = path.join(__dirname, '..', '.ffmpeg', 'ffmpeg');
+      if (fs.existsSync(localFF)) return localFF;
+      if (process.resourcesPath) {
+        const resFF = path.join(process.resourcesPath, '.ffmpeg', 'ffmpeg');
+        if (fs.existsSync(resFF)) return resFF;
+      }
+      const macPaths = ['/opt/homebrew/bin/ffmpeg', '/usr/local/bin/ffmpeg', '/usr/bin/ffmpeg'];
+      for (const mp of macPaths) { if (fs.existsSync(mp)) return mp; }
+    }
     return 'ffmpeg';
   }
 
