@@ -235,8 +235,21 @@ class SubtitleEngine {
   }
 
   _findFFmpeg() {
+    // Check env first
+    if (process.env.FFMPEG_PATH && fs.existsSync(process.env.FFMPEG_PATH)) return process.env.FFMPEG_PATH;
+    // Project root
     const localPath = path.join(process.cwd(), 'ffmpeg.exe');
     if (fs.existsSync(localPath)) return localPath;
+    // Cached .ffmpeg/ffmpeg.exe (dev & Electron)
+    const cachedPath = path.join(process.cwd(), '.ffmpeg', 'ffmpeg.exe');
+    if (fs.existsSync(cachedPath)) return cachedPath;
+    // Electron extraResources
+    if (process.resourcesPath) {
+      const resPath = path.join(process.resourcesPath, '.ffmpeg', 'ffmpeg.exe');
+      if (fs.existsSync(resPath)) return resPath;
+      const resPath2 = path.join(process.resourcesPath, 'ffmpeg.exe');
+      if (fs.existsSync(resPath2)) return resPath2;
+    }
     return 'ffmpeg';
   }
 }
