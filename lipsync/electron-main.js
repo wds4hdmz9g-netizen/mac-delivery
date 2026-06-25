@@ -11,14 +11,16 @@ const http = require('http');
 
 const PORT = 3459;
 
-// ===== 标记 Electron 环境，server.js 会用到 =====
+// ===== 标记 Electron 环境，设置端口 =====
 process.env.ELECTRON_RUN = 'true';
+process.env.PORT = '3459';
 
-// ===== 确保 FFmpeg 路径 =====
-const ffmpegPath = path.join(__dirname, '.ffmpeg', 'ffmpeg.exe');
-if (fs.existsSync(ffmpegPath) && !process.env.FFMPEG_PATH) {
-  process.env.FFMPEG_PATH = ffmpegPath;
-}
+// ===== 确保 FFmpeg 路径（ASAR兼容） =====
+const zAsarMode = __dirname.includes('.asar');
+const ffmpegPath = zAsarMode && process.resourcesPath
+  ? path.join(process.resourcesPath, '.ffmpeg', 'ffmpeg.exe')
+  : path.join(__dirname, '.ffmpeg', 'ffmpeg.exe');
+try { if (fs.existsSync(ffmpegPath) && !process.env.FFMPEG_PATH) process.env.FFMPEG_PATH = ffmpegPath; } catch {}
 
 // ===== 启动后端 Express 服务 =====
 let server = null;
