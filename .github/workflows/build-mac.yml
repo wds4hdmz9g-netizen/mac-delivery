@@ -14,6 +14,15 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: '22'
+
+      - name: Install FFmpeg and cache for bundling
+        working-directory: lipsync
+        run: |
+          brew install ffmpeg
+          mkdir -p .ffmpeg
+          cp $(which ffmpeg) .ffmpeg/ffmpeg
+          chmod +x .ffmpeg/ffmpeg
+          echo "FFmpeg installed: $(.ffmpeg/ffmpeg -version | head -1)"
           
       - name: Build AI口播助手
         working-directory: lipsync
